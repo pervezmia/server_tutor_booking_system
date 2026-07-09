@@ -10,7 +10,7 @@ const port = process.env.PORT || 9000;
 
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://tutor_booking_system:PolZRElR7dN0oW4A@cluster0.onlskrj.mongodb.net/?appName=Cluster0";
+const uri = process.env.MONGO_DB_URI;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
