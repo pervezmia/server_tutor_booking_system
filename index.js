@@ -38,7 +38,13 @@ async function run() {
       res.send(result);
     })
 
-    
+    app.get("/all-tutors/:tutorId", async(req, res) => {
+      const {tutorId} = req.params;
+      // console.log(tutorId);
+      const query = {_id: new ObjectId(tutorId)};
+      const result = await tutorCollection.findOne(query);
+      res.send(result)
+    })
 
 
     // Add a new tutor (Add Tutor page)
