@@ -11,7 +11,7 @@ const port = process.env.PORT || 9000;
 
 // db name = tutor_booking_system
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = process.env.MONGO_DB_URI;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -29,7 +29,17 @@ async function run() {
     await client.connect();
 
     const db = client.db("tutor_booking_system");
-    const tutorCollection = db.collection("tutorCollection");
+    const tutorCollection = db.collection("tutor_booking_system_Collection");
+
+    app.get("/all-tutors", async(req, res) => {
+      const cursor = tutorCollection.find();
+      const result = await cursor.toArray();
+      console.log(result);
+      res.send(result);
+    })
+
+    
+
 
     // Add a new tutor (Add Tutor page)
     app.post("/tutors", async (req, res) => {
@@ -43,7 +53,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Connection stays open to keep serving requests — do not close here.
