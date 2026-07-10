@@ -38,6 +38,13 @@ async function run() {
       res.send(result);
     })
 
+    app.get("/popular-tutors", async(req, res) => {
+      const cursor = tutorCollection.find().limit(6);
+      const result = await cursor.toArray();
+      console.log(result);
+      res.send(result);
+    })
+
     app.get("/all-tutors/:tutorId", async(req, res) => {
       const {tutorId} = req.params;
       // console.log(tutorId);
