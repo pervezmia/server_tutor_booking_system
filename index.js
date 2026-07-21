@@ -127,9 +127,17 @@ async function run() {
         return;
       }
 
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const sessionDate = tutor.sessionStartDate ? new Date (tutor.sessionStartDate): null ;
+
+      if(sessionDate) sessionDate.setHours(0, 0, 0, 0);
+
+
+
       if (
-        tutor.sessionStartDate &&
-        new Date() < new Date(tutor.sessionStartDate)
+        sessionDate && today > sessionDate
       ) {
         return res.status(400).json({
           message: "Booking is not available yet for this tutor",
