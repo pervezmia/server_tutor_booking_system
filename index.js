@@ -104,6 +104,72 @@ async function run() {
       res.send(result);
     });
 
+
+    //my-tutors getting n
+    app.get("/my-tutors/:email", verifyToken ,async (req, res) => {
+      const {email} = req.params;
+
+      if(req.user.email !== email){
+        return res.status(403).json({message: "Forbidden access"});
+      }
+
+      const result = await tutorCollection.find({tutorEmail: email}).toArray();
+
+      res.send(result);
+
+    })
+
+    //my-tutor updated n
+    app.patch("/tutors/:id" , verifyToken, async (req, res) => {
+      const {id} = req.params;
+      const updatedData = req.body;
+
+      const tutor = await tutorCollection.findOne({_id: new ObjectId(id)});
+
+      if(!tutor){
+        return res.status(404).json({message: "Tutor not found"});
+      }
+
+      if(tutor.tutorEmail !== req.user.email){
+        return res.status(403).json({message: "Forbidden access"});
+      }
+
+      const result = await tutorCollection.updateOne(
+        {_id: new ObjectId(id)},
+        {
+          $set: {
+            ...updatedData,
+            totalSlot: Number(updatedData.totalSlot),
+            hourlyFee: Number(updatedData.hourlyFee),
+          },
+        }
+      );
+
+      res.send(result);
+
+
+    })
+
+    //my-tutor delete n
+    app.delete("/tutors/:id", verifyToken, async (req, res) => {
+      const {id} = req.params;
+
+      const tutor = await tutorCollection.findOne({_id: new ObjectId(id)});
+
+      if(!tutor){
+        return res.status(404).json({message: "Tutor not found"});
+      }
+
+      if(tutor.tutorEmail !== req.user.email){
+        return res.status(403).json({message: "Forbidden access"});
+      }
+
+      const result = await tutorCollection.deleteOne({_id: new ObjectId(id)});
+
+      res.send(result);
+    })
+
+
     //get booked
     app.get("/booked/:studentId", verifyToken, async (req, res) => {
       const { studentId } = req.params;
