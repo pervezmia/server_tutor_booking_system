@@ -128,7 +128,7 @@ const verifyToken = async (req, res, next) => {
       res.send(result);
     });
 
-    app.get("/all-tutors/:tutorId", async (req, res) => {
+    app.get("/all-tutors/:tutorId", verifyToken, async (req, res) => {
       // console.log(req.user);
       const { tutorId } = req.params;
       // console.log(tutorId);
