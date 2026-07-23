@@ -68,7 +68,54 @@ async function run() {
 
     app.get("/all-tutors", async (req, res) => {
       // console.log(req.query);
-      const cursor = tutorCollection.find();
+
+      const { search, sortBy } = req.query;
+      console.log({search,sortBy},"ssssss");
+
+      let query = {};
+
+      if (search) {
+        query = {
+          $or: [
+            {
+              subjectName: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              tutorName: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              institution: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              location: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+          ],
+        };
+      }
+
+      let sortOption = {};
+      if(sortBy === "price_low"){
+        sortOption = {hourlyFee: 1};
+      } else if(sortBy === "price_high"){
+        sortOption = {hourlyFee: -1};
+      }
+      // else {
+      //   cursor = await tutorCollection.find();
+      // }
+
+      const cursor = tutorCollection.find(query).sort(sortOption);
       const result = await cursor.toArray();
       // console.log(result);
       res.send(result);
@@ -104,71 +151,68 @@ async function run() {
       res.send(result);
     });
 
-
     //my-tutors getting n
-    app.get("/my-tutors/:email", verifyToken ,async (req, res) => {
-      const {email} = req.params;
+    app.get("/my-tutors/:email", verifyToken, async (req, res) => {
+      const { email } = req.params;
 
-      if(req.user.email !== email){
-        return res.status(403).json({message: "Forbidden access"});
+      if (req.user.email !== email) {
+        return res.status(403).json({ message: "Forbidden access" });
       }
 
-      const result = await tutorCollection.find({tutorEmail: email}).toArray();
+      const result = await tutorCollection
+        .find({ tutorEmail: email })
+        .toArray();
 
       res.send(result);
-
-    })
+    });
 
     //my-tutor updated n
-    app.patch("/tutors/:id" , verifyToken, async (req, res) => {
-      const {id} = req.params;
+    app.patch("/tutors/:id", verifyToken, async (req, res) => {
+      const { id } = req.params;
       const updatedData = req.body;
 
-      const tutor = await tutorCollection.findOne({_id: new ObjectId(id)});
+      const tutor = await tutorCollection.findOne({ _id: new ObjectId(id) });
 
-      if(!tutor){
-        return res.status(404).json({message: "Tutor not found"});
+      if (!tutor) {
+        return res.status(404).json({ message: "Tutor not found" });
       }
 
-      if(tutor.tutorEmail !== req.user.email){
-        return res.status(403).json({message: "Forbidden access"});
+      if (tutor.tutorEmail !== req.user.email) {
+        return res.status(403).json({ message: "Forbidden access" });
       }
 
       const result = await tutorCollection.updateOne(
-        {_id: new ObjectId(id)},
+        { _id: new ObjectId(id) },
         {
           $set: {
             ...updatedData,
             totalSlot: Number(updatedData.totalSlot),
             hourlyFee: Number(updatedData.hourlyFee),
           },
-        }
+        },
       );
 
       res.send(result);
-
-
-    })
+    });
 
     //my-tutor delete n
     app.delete("/tutors/:id", verifyToken, async (req, res) => {
-      const {id} = req.params;
+      const { id } = req.params;
 
-      const tutor = await tutorCollection.findOne({_id: new ObjectId(id)});
+      const tutor = await tutorCollection.findOne({ _id: new ObjectId(id) });
 
-      if(!tutor){
-        return res.status(404).json({message: "Tutor not found"});
+      if (!tutor) {
+        return res.status(404).json({ message: "Tutor not found" });
       }
 
-      if(tutor.tutorEmail !== req.user.email){
-        return res.status(403).json({message: "Forbidden access"});
+      if (tutor.tutorEmail !== req.user.email) {
+        return res.status(403).json({ message: "Forbidden access" });
       }
 
-      const result = await tutorCollection.deleteOne({_id: new ObjectId(id)});
+      const result = await tutorCollection.deleteOne({ _id: new ObjectId(id) });
 
       res.send(result);
-    })
-
+    });
 
     //get booked
     app.get("/booked/:studentId", verifyToken, async (req, res) => {
@@ -196,15 +240,13 @@ async function run() {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const sessionDate = tutor.sessionStartDate ? new Date (tutor.sessionStartDate): null ;
+      const sessionDate = tutor.sessionStartDate
+        ? new Date(tutor.sessionStartDate)
+        : null;
 
-      if(sessionDate) sessionDate.setHours(0, 0, 0, 0);
+      if (sessionDate) sessionDate.setHours(0, 0, 0, 0);
 
-
-
-      if (
-        sessionDate && today > sessionDate
-      ) {
+      if (sessionDate && today > sessionDate) {
         return res.status(400).json({
           message: "Booking is not available yet for this tutor",
         });
