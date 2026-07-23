@@ -57,10 +57,10 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+// async function run() {
+//   try {
+//     // Connect the client to the server	(optional starting in v4.7)
+//     await client.connect();
 
     const db = client.db("tutor_booking_system");
     const tutorCollection = db.collection("tutor_booking_system_Collection");
@@ -70,7 +70,7 @@ async function run() {
       // console.log(req.query);
 
       const { search, sortBy } = req.query;
-      console.log({search,sortBy},"ssssss");
+      // console.log({search,sortBy},"ssssss");
 
       let query = {};
 
@@ -317,11 +317,11 @@ async function run() {
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!",
     );
-  } finally {
-    // Connection stays open to keep serving requests — do not close here.
-  }
-}
-run().catch(console.dir);
+//   } finally {
+//     // Connection stays open to keep serving requests — do not close here.
+//   }
+// }
+// run().catch(console.dir);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
