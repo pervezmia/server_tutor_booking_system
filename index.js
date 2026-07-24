@@ -293,41 +293,6 @@ app.patch("/booked/cancel/:id", verifyToken, async (req, res) => {
   res.status(200).json({ success: true, result });
 });
 
-//delete er bodole uporer patch korlam -->/booked/cancel/:tutorId
-// app.delete("/booked/:tutorId", verifyToken, async (req, res) => {
-//   const { tutorId } = req.params;
-//   const studentId = req.user.id;
-
-//   const tutorObjectId = new ObjectId(tutorId);
-
-//   const existingBooked = await bookedCollection.findOne({
-//     tutorId,
-//     studentId,
-//   });
-
-//   if (!existingBooked) {
-//     return res.status(404).json({ message: "Booked tutor is not found!" });
-//   }
-
-//   await bookedCollection.deleteOne({
-//     tutorId,
-//     studentId,
-//   });
-
-//   const result = await tutorCollection.updateOne(
-//     { _id: tutorObjectId },
-//     {
-//       $inc: {
-//         // enrollCount: existingBooked ? -1 : 0,
-//         totalSlot: 1,
-//       },
-//     },
-//   );
-
-//   res.status(200).json({ success: true, result });
-
-//   // res.send(result);
-// });
 
 // Send a ping to confirm a successful connection
 // await client.db("admin").command({ ping: 1 });
